@@ -1,9 +1,4 @@
-import 'package:al_asr_admin/screens/search_bar.dart';
 import 'package:flutter/material.dart';
-
-List<dynamic> productsGetList;
-List<Note> productList = List<Note>();
-
 
 class ProductProvider with ChangeNotifier{
   List<String> selectedColors = [];

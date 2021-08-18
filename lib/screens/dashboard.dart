@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:al_asr_admin/providers/app_states.dart';
-import 'package:al_asr_admin/widgets/small_card.dart';
+import 'package:Medsway.pk_Admin/providers/app_states.dart';
+import 'package:Medsway.pk_Admin/widgets/small_card.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:provider/provider.dart';
 import 'add_products.dart';

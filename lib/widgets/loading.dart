@@ -7,5 +7,3 @@ class Loading extends StatelessWidget {
     );
   }
 }
-
-String emailCheck;

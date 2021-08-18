@@ -1,25 +1,17 @@
-import 'package:al_asr_admin/providers/zone_area_provider.dart';
-import 'package:al_asr_admin/screens/create_admin_screen.dart';
-import 'package:al_asr_admin/screens/search_bar.dart';
-import 'package:al_asr_admin/screens/slider_list.dart';
-import 'package:al_asr_admin/screens/slider_picker.dart';
-import 'package:al_asr_admin/screens/sold_list.dart';
-import 'package:al_asr_admin/screens/zone_list.dart';
-import 'package:al_asr_admin/widgets/loading.dart';
-import 'package:awesome_loader/awesome_loader.dart';
-import 'package:dio/dio.dart';
+import 'package:Medsway.pk_Admin/screens/slider_list.dart';
+import 'package:Medsway.pk_Admin/screens/slider_picker.dart';
+import 'package:Medsway.pk_Admin/screens/sold_list.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:al_asr_admin/providers/user_provider.dart';
-import 'package:al_asr_admin/providers/products_provider.dart';
-import 'package:al_asr_admin/screens/add_products.dart';
-import 'package:al_asr_admin/screens/product_list.dart';
-import 'package:al_asr_admin/screens/users_list.dart';
+import 'package:Medsway.pk_Admin/providers/user_provider.dart';
+import 'package:Medsway.pk_Admin/screens/add_products.dart';
+import 'package:Medsway.pk_Admin/screens/product_list.dart';
+import 'package:Medsway.pk_Admin/screens/users_list.dart';
 import 'package:provider/provider.dart';
 import '../db/category.dart';
 import '../db/brand.dart';
+import 'brand_list.dart';
 import 'categories_list.dart';
-import 'login.dart';
 import 'orders_list.dart';
 
 enum Page { dashboard, manage }
@@ -33,13 +25,11 @@ class _AdminState extends State<Admin> {
   MaterialColor active = Colors.blue;
   MaterialColor notActive = Colors.grey;
   TextEditingController categoryController = TextEditingController();
-  TextEditingController zoneAreaNameController = TextEditingController();
-  TextEditingController zoneAreaValueController = TextEditingController();
+  TextEditingController brandController = TextEditingController();
   GlobalKey<FormState> _categoryFormKey = GlobalKey();
-  GlobalKey<FormState> _zoneFormKey = GlobalKey();
+  GlobalKey<FormState> _brandFormKey = GlobalKey();
   BrandService _brandService = BrandService();
   CategoryService _categoryService = CategoryService();
-  ZoneAreaService zoneAreaService = ZoneAreaService();
 
   bool _icon;
   Future<bool> _onBackPressed() {
@@ -72,38 +62,6 @@ class _AdminState extends State<Admin> {
     ) ??
         false;
   }
-
-  Future<List<Note>> productsList() async {
-    String url = 'https://globaltodobackend.herokuapp.com/api/v1/medicine';
-    Dio dio = new Dio();
-    dio.options.headers['content-Type'] = 'application/json';
-    dio.options.headers['accept'] = 'application/json';
-
-    Response productListResponse = await dio.get(url);
-    print("Status Code =  ${productListResponse.statusCode.toString()}");
-    if (productListResponse.statusCode == 200) {
-      setState(() {
-        productsGetList = productListResponse.data;
-        for(var noteJson in productsGetList){
-          productList.add(Note.fromJson(noteJson));
-        }
-      });
-      print("Product List Length = ${productsGetList.length}");
-      print("${productsGetList[4].toString()}");
-
-    }
-    if(productListResponse.statusCode != 200){
-      print("Status Code =  ${productListResponse.statusCode.toString()}");
-    }
-    return productList;
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    productsList();
-  }
   @override
   Widget build(BuildContext context) {
     final users = Provider.of<UserProvider>(context);
@@ -112,27 +70,12 @@ class _AdminState extends State<Admin> {
       onWillPop: _onBackPressed,
       child: DefaultTabController(
         length: 2,
-          child: productsGetList == null
-              ?Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            color: Color(0xff252525),
-            child: Center(
-              child: AwesomeLoader(
-                loaderType: AwesomeLoader.AwesomeLoader2,
-                color: Color(0xff008db9),
-              ),
-            ),
-          )
-
-              :Scaffold(
+          child: Scaffold(
           backgroundColor: Color(0xff252525),
             appBar: AppBar(
-//              centerTitle: true,
+              centerTitle: true,
              title: Image.asset('icons/AdminBar.png', height: 35),
-              bottom: emailCheck == 'employee@alasr.com'
-                  ?null
-                  :TabBar(
+              bottom: TabBar(
               isScrollable: false,
               indicatorColor: Color(0xff008db9),
               indicatorWeight: 2.0,
@@ -178,9 +121,7 @@ class _AdminState extends State<Admin> {
             elevation: 3.0,
             backgroundColor: Color(0xff2f2f2f),
           ),
-              body: emailCheck == 'employee@alasr.com'
-                  ?_dashboard()
-                  :new TabBarView(
+              body: new TabBarView(
 
               children: <Widget>[
                 _dashboard(),
@@ -197,9 +138,6 @@ class _AdminState extends State<Admin> {
                   child: InkWell(
                     onTap: () {
                       users.signOut();
-
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Login()));
-
                     },
                     child: Container(
                       height: 40.0,
@@ -279,7 +217,7 @@ class _AdminState extends State<Admin> {
                 child: ListTile(
                   title: FlatButton(
                     onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => ZoneList()));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => BrandListPage()));
                     },
                     child: Image.asset('icons/brands.png'),),
                 ),
@@ -313,8 +251,6 @@ class _AdminState extends State<Admin> {
   }
 
   Widget _manage(){
-    final users = Provider.of<UserProvider>(context);
-
     return ListView(
       children: <Widget>[
         ListTile(
@@ -343,13 +279,13 @@ class _AdminState extends State<Admin> {
         Divider(),
         ListTile(
           leading: Icon(Icons.add,  color: Color(0xff008db9)),
-          title: Text('Add ZoneArea',
+          title: Text('Add Brand',
             style: TextStyle(color: Colors.white,
                 fontWeight: FontWeight.bold),
 
           ),
           onTap: () {
-            _zoneAlert();
+            _brandAlert();
           },
         ),
         Divider(),
@@ -377,19 +313,6 @@ class _AdminState extends State<Admin> {
           },
         ),
         Divider(),
-        // ListTile(
-        //   leading: Icon(Icons.person_add, color: Color(0xff008db9)),
-        //   title: Text('Create Admin',
-        //     style: TextStyle(color: Colors.white,
-        //         fontWeight: FontWeight.bold),
-        //
-        //   ),
-        //   onTap: () {
-        //     users.signOut();
-        //     // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => CreateAdminScreen()));
-        //   },
-        // ),
-        // Divider(),
       ],
     );
   }
@@ -412,7 +335,6 @@ class _AdminState extends State<Admin> {
               return 'Field cannot be empty';
             }
           },
-//          keyboardType: TextInputType.,
           decoration: InputDecoration(
                 border: InputBorder.none,
                 fillColor: Color(0xff2f2f2f),
@@ -450,7 +372,7 @@ class _AdminState extends State<Admin> {
     showDialog(context: context, builder: (_) => alert);
   }
 
-  void _zoneAlert() {
+  void _brandAlert() {
     var alert = new AlertDialog(
       backgroundColor: Color(0xff252525),
       elevation: 7.0,
@@ -458,45 +380,21 @@ class _AdminState extends State<Admin> {
           borderRadius: BorderRadius.all(Radius.circular(8.0))
       ),
       content: Form(
-        key: _zoneFormKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextFormField(
-                controller: zoneAreaNameController,
-                validator: (value){
-                  if(value.isEmpty){
-                    return 'Field cannot be empty';
-                  }
-                },
-                style: new TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xff2f2f2f),
-                  filled: true,
-                  labelText: "Add ZoneArea Name",
-                  labelStyle: TextStyle(color: Colors.grey[50]),
-                ),
-              ),
-              Divider(),
-              TextFormField(
-                controller: zoneAreaValueController,
-                validator: (value){
-                  if(value.isEmpty){
-                    return 'Field cannot be empty';
-                  }
-                },
-                style: new TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xff2f2f2f),
-                  filled: true,
-                  labelText: "Add ZoneArea Value",
-                  labelStyle: TextStyle(color: Colors.grey[50]),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-            ],
+        key: _brandFormKey,
+        child: TextFormField(
+          controller: brandController,
+          validator: (value){
+            if(value.isEmpty){
+              return 'Field cannot be empty';
+            }
+          },
+          style: new TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            fillColor: Color(0xff2f2f2f),
+            filled: true,
+            labelText: "Add Brand",
+            labelStyle: TextStyle(color: Colors.grey[50]),
           ),
         ),
       ),
@@ -508,15 +406,11 @@ class _AdminState extends State<Admin> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             onPressed: (){
-              if(_zoneFormKey.currentState.validate()){
-                Fluttertoast.showToast(msg: 'ZoneArea added');
+              if(_brandFormKey.currentState.validate()){
+                Fluttertoast.showToast(msg: 'Brand added');
                 Navigator.pop(context);
-               zoneAreaService.uploadZoneArea({
-                 "zone_name": zoneAreaNameController.text,
-                 "zone_value": zoneAreaValueController.text,
-               });
-                zoneAreaNameController.clear();
-                zoneAreaValueController.clear();
+                _brandService.createBrand(brandController.text);
+                brandController.clear();
               }
 
             }, child: Text('ADD')),

@@ -12,7 +12,7 @@ class CategoryService {
     var id = Uuid();
     String categoryId = id.v1();
 
-    _firestore.collection(ref).document(categoryId).setData({'category': name.toUpperCase()});
+    _firestore.collection(ref).document(categoryId).setData({'category': name});
   }
 
   Future<List<DocumentSnapshot>> getCategories() =>

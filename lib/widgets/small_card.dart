@@ -25,8 +25,7 @@ class _SmallCardState extends State<SmallCard> {
             height: 100,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                gradient: LinearGradient(
-                    colors: [
+                gradient: LinearGradient(colors: [
                   widget.color1,
                   widget.color2,
                 ]),

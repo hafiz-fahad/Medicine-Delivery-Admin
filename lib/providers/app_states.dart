@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 
 enum Screen{DASH, PRODUCTS, CATEGORIES, BRANDS, ORDERS}
 
@@ -12,5 +11,3 @@ class AppState with ChangeNotifier{
   }
 
 }
-
-GetStorage box  = GetStorage();

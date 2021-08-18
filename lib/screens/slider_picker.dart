@@ -1,5 +1,5 @@
-import 'package:al_asr_admin/providers/slider_service.dart';
-import 'package:al_asr_admin/widgets/loading.dart';
+import 'package:Medsway.pk_Admin/providers/slider_service.dart';
+import 'package:Medsway.pk_Admin/widgets/loading.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';

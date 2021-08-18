@@ -1,5 +1,5 @@
-import 'package:al_asr_admin/providers/sold_provider.dart';
-import 'package:al_asr_admin/widgets/loading.dart';
+import 'package:Medsway.pk_Admin/providers/sold_provider.dart';
+import 'package:Medsway.pk_Admin/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
@@ -68,59 +68,49 @@ class _OrderListPageState extends State<OrderListPage> {
 //                          _listCounter = true;
                           return Column(
                             children: snapshot.data.documents.map((doc) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  color: doc.data['accept_status'] == false
-                                      ? Colors.cyan.withOpacity(0.4)
-                                      : Color(0xff2f2f2f),
-                                  child: ListTile(
-                                    leading: ImageIcon(AssetImage('icons/products_icon.png'),
-                                      size: 30, color: Color(0xff008db9),),
-                                    title: Text(doc.data['customer_name'],
-                                      style: TextStyle(color: Colors.white),),
-                                    subtitle: Text(timeago.format(DateTime.tryParse(doc.data['date'].toDate().toString())).toString(),
-                                      style: TextStyle(color: Colors.white,fontSize: 10),),
-                                    onTap: () => navigateToDetail(doc),
-                                    trailing: doc.data['accept_status'] == false
-                                        ?Icon(Icons.notifications_active,color: Color(0xff008db9),)
-                                        :IconButton(
-                                      icon: Icon(Icons.delete, color: Colors.redAccent),
-                                      onPressed: ()
-                                      {var alert = new AlertDialog(
-                                        backgroundColor: Color(0xff252525),
-                                        elevation: 7.0,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(Radius.circular(8.0))
-                                        ),
-                                        content:
-                                        Text('Are you sure you want to delete this Order?',
-                                            style: TextStyle(color: Colors.white)),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                              color: Color(0xff008db9),
-                                              textColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8.0),
-                                              ),
-                                              onPressed: ()async{
-                                                Fluttertoast.showToast(msg: 'Order Deleted Successfully');
-                                                Navigator.pop(context);
-                                                await Firestore.instance
-                                                    .collection('order')
-                                                    .document(doc.documentID)
-                                                    .delete();
-                                              }, child: Text('DELETE')),
-                                          FlatButton(onPressed: (){
-                                            Navigator.pop(context);
-                                          }, child: Text('CANCEL'),
-                                              textColor: Colors.white),
-                                        ],
-                                      );
-                                      showDialog(context: context, builder: (_) => alert);
-                                      },
+                              return ListTile(
+                                leading: ImageIcon(AssetImage('icons/products_icon.png'),
+                                  size: 30, color: Color(0xff008db9),),
+                                title: Text(doc.data['customer_name'],
+                                  style: TextStyle(color: Colors.white),),
+                                subtitle: Text(timeago.format(DateTime.tryParse(doc.data['date'].toDate().toString())).toString(),
+                                  style: TextStyle(color: Colors.white,fontSize: 10),),
+                                onTap: () => navigateToDetail(doc),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.redAccent),
+                                  onPressed: ()
+                                  {var alert = new AlertDialog(
+                                    backgroundColor: Color(0xff252525),
+                                    elevation: 7.0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(8.0))
                                     ),
-                                  ),
+                                    content:
+                                    Text('Are you sure you want to delete this Order?',
+                                        style: TextStyle(color: Colors.white)),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                          color: Color(0xff008db9),
+                                          textColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8.0),
+                                          ),
+                                          onPressed: ()async{
+                                            Fluttertoast.showToast(msg: 'Order Deleted Successfully');
+                                            Navigator.pop(context);
+                                            await Firestore.instance
+                                                .collection('order')
+                                                .document(doc.documentID)
+                                                .delete();
+                                          }, child: Text('DELETE')),
+                                      FlatButton(onPressed: (){
+                                        Navigator.pop(context);
+                                      }, child: Text('CANCEL'),
+                                          textColor: Colors.white),
+                                    ],
+                                  );
+                                  showDialog(context: context, builder: (_) => alert);
+                                  },
                                 ),
                               );
                             }).toList(),
@@ -132,68 +122,57 @@ class _OrderListPageState extends State<OrderListPage> {
                   StreamBuilder<QuerySnapshot>(
                       stream: Firestore.instance.collection('orderWithPrescription').orderBy('date',descending: true).snapshots(),
                       builder: (context, snapshot) {
-//                        if(snapshot.connectionState == ConnectionState.waiting){
-////                          return Loading();
-//                        }
-//                        else
-                          if (snapshot.hasData) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return Loading();
+                        }
+                        else if (snapshot.hasData) {
 //                          _listCounter = true;
                           return Column(
                             children: snapshot.data.documents.map((doc) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  color: doc.data['accept_status'] == false
-                                      ? Colors.cyan.withOpacity(0.4)
-                                      : Color(0xff2f2f2f),
-                                  child: ListTile(
-                                    leading: ImageIcon(AssetImage('icons/products_icon.png'),
-                                      size: 30, color: Color(0xff008db9),),
-                                    title: Text('${doc.data['customer_name']}',
-                                      style: TextStyle(color: Colors.white),),
-                                    subtitle: Text('${timeago.format(DateTime.tryParse(doc.data['date'].toDate().toString())).toString()}'
-                                        '\t\t\t\t(prescription)',
-                                      style: TextStyle(color: Colors.white,fontSize: 10),),
-                                    onTap: () => navigateToDetail2(doc),
-                                    trailing: doc.data['accept_status'] == false
-                                        ?Icon(Icons.notifications_active,color: Color(0xff008db9),)
-                                        :IconButton(
-                                      icon: Icon(Icons.delete, color: Colors.redAccent),
-                                      onPressed: ()
-                                      {var alert = new AlertDialog(
-                                        backgroundColor: Color(0xff252525),
-                                        elevation: 7.0,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(Radius.circular(8.0))
-                                        ),
-                                        content:
-                                        Text('Are you sure you want to delete this Order?',
-                                            style: TextStyle(color: Colors.white)),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                              color: Color(0xff008db9),
-                                              textColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8.0),
-                                              ),
-                                              onPressed: ()async{
-                                                Fluttertoast.showToast(msg: 'Order Deleted Successfully');
-                                                Navigator.pop(context);
-                                                await Firestore.instance
-                                                    .collection('orderWithPrescription')
-                                                    .document(doc.documentID)
-                                                    .delete();
-                                              }, child: Text('DELETE')),
-                                          FlatButton(onPressed: (){
-                                            Navigator.pop(context);
-                                          }, child: Text('CANCEL'),
-                                              textColor: Colors.white),
-                                        ],
-                                      );
-                                      showDialog(context: context, builder: (_) => alert);
-                                      },
+                              return ListTile(
+                                leading: ImageIcon(AssetImage('icons/products_icon.png'),
+                                  size: 30, color: Color(0xff008db9),),
+                                title: Text('${doc.data['customer_name']}',
+                                  style: TextStyle(color: Colors.white),),
+                                subtitle: Text('${timeago.format(DateTime.tryParse(doc.data['date'].toDate().toString())).toString()}'
+                                    '\t\t\t\t(prescription)',
+                                  style: TextStyle(color: Colors.white,fontSize: 10),),
+                                onTap: () => navigateToDetail2(doc),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.redAccent),
+                                  onPressed: ()
+                                  {var alert = new AlertDialog(
+                                    backgroundColor: Color(0xff252525),
+                                    elevation: 7.0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(8.0))
                                     ),
-                                  ),
+                                    content:
+                                    Text('Are you sure you want to delete this Order?',
+                                        style: TextStyle(color: Colors.white)),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                          color: Color(0xff008db9),
+                                          textColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8.0),
+                                          ),
+                                          onPressed: ()async{
+                                            Fluttertoast.showToast(msg: 'Order Deleted Successfully');
+                                            Navigator.pop(context);
+                                            await Firestore.instance
+                                                .collection('orderWithPrescription')
+                                                .document(doc.documentID)
+                                                .delete();
+                                          }, child: Text('DELETE')),
+                                      FlatButton(onPressed: (){
+                                        Navigator.pop(context);
+                                      }, child: Text('CANCEL'),
+                                          textColor: Colors.white),
+                                    ],
+                                  );
+                                  showDialog(context: context, builder: (_) => alert);
+                                  },
                                 ),
                               );
                             }).toList(),
@@ -524,38 +503,9 @@ class _OrderDetailState extends State<OrderDetail> {
       bottomNavigationBar: new Container(
         color: Color(0xff2f2f2f),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-              widget.order['accept_status'] == false
-                  ? Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InkWell(
-                    onTap: () {
-                      _updateData();
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 55.0,
-                      width: 300.0,
-                      decoration: BoxDecoration(
-                          color: deliveryStatus? Colors.grey: Color(0xff008db9),
-                          borderRadius: BorderRadius.all(Radius.circular(40.0))),
-                      child: Center(
-                        child: Text("Accept",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16.5,
-                              letterSpacing: 1.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-                  : Expanded(
-              child: Padding(
+              Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: InkWell(
                   onTap: () {
@@ -591,7 +541,7 @@ class _OrderDetailState extends State<OrderDetail> {
                         borderRadius: BorderRadius.all(Radius.circular(40.0))),
                     child: Center(
                       child: Text(deliveryStatus?
-                      "Deliverd":'Click to confirm Delivery',
+                        "Deliverd":'Click to confirm Delivery',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
@@ -602,24 +552,12 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
               ),
-            ),
+            SizedBox(height: 20.0,)
           ],
         ),
       ),
     );
   }
-  _updateData() async {
-//    if (_updateFormKey.currentState.validate()) {
-    await Firestore.instance
-        .collection('order')
-        .document(widget.order.data['orderId'])
-        .setData({
-      'accept_status': true,
-    },merge: true);
-    Fluttertoast.showToast(msg: 'Order Accepted Successfully');
-//    }
-  }
-
   _deleteFromOrders(){
     Fluttertoast.showToast(msg: 'Order Deliverd Successfully');
     Firestore.instance
@@ -885,81 +823,50 @@ class _OrderPDetailState extends State<OrderPDetail> {
       bottomNavigationBar: new Container(
         color: Color(0xff2f2f2f),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            widget.order['accept_status'] == false
-                ? Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                  onTap: () {
-                    _updateData();
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    height: 55.0,
-                    width: 300.0,
-                    decoration: BoxDecoration(
-                        color: deliveryStatus? Colors.grey: Color(0xff008db9),
-                        borderRadius: BorderRadius.all(Radius.circular(40.0))),
-                    child: Center(
-                      child: Text("Accept",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16.5,
-                            letterSpacing: 1.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-                :
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                  onTap: () {
-                    if(deliveryStatus == false){
-                      _soldService.soldPresProduct({
-                        'userId': widget.order.data['userId'],
-                        'orderId': widget.order.data['orderId'],
-                        'customer_name': widget.order.data['customer_name'],
-                        'date': Timestamp.now(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  if(deliveryStatus == false){
+                    _soldService.soldPresProduct({
+                      'userId': widget.order.data['userId'],
+                      'orderId': widget.order.data['orderId'],
+                      'customer_name': widget.order.data['customer_name'],
+                      'date': Timestamp.now(),
 //                    'products_details': widget.order.data['products_details'],
 //                    'total_bill': widget.order.data['total_bill'],
 //                    'delivery_amount': widget.order.data['delivery_amount'],
-                        'zone_name': widget.order.data['zone_name'],
-                        'address': widget.order.data['address'],
-                        'picture': widget.order.data['picture']==null?null:widget.order.data['picture'],
-                        'postal_code': widget.order.data['postal_code'],
-                        'phone': widget.order.data['phone'],
+                      'zone_name': widget.order.data['zone_name'],
+                      'address': widget.order.data['address'],
+                      'picture': widget.order.data['picture']==null?null:widget.order.data['picture'],
+                      'postal_code': widget.order.data['postal_code'],
+                      'phone': widget.order.data['phone'],
 //                    'total_payable': widget.order.data['delivery_amount']+widget.order.data['total_bill']
-                      });
-                      _deleteFromPresOrders();
+                    });
+                    _deleteFromPresOrders();
 
-                      setState(() {
-                        deliveryStatus = true;
-                      });
-                    }
+                    setState(() {
+                      deliveryStatus = true;
+                    });
+                  }
 
-                  },
-                  child: Container(
-                    height: 55.0,
-                    width: 300.0,
-                    decoration: BoxDecoration(
-                        color: deliveryStatus? Colors.grey:Color(0xff008db9),
-                        borderRadius: BorderRadius.all(Radius.circular(40.0))),
-                    child: Center(
-                      child: Text(deliveryStatus?
-                        "Deliverd":'Click to confirm Delivery',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16.5,
-                            letterSpacing: 1.0),
-                      ),
+                },
+                child: Container(
+                  height: 55.0,
+                  width: 300.0,
+                  decoration: BoxDecoration(
+                      color: deliveryStatus? Colors.grey:Color(0xff008db9),
+                      borderRadius: BorderRadius.all(Radius.circular(40.0))),
+                  child: Center(
+                    child: Text(deliveryStatus?
+                      "Deliverd":'Click to confirm Delivery',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16.5,
+                          letterSpacing: 1.0),
                     ),
                   ),
                 ),
@@ -970,17 +877,6 @@ class _OrderPDetailState extends State<OrderPDetail> {
         ),
       ),
     );
-  }
-  _updateData() async {
-//    if (_updateFormKey.currentState.validate()) {
-    await Firestore.instance
-        .collection('orderWithPrescription')
-        .document(widget.order.data['orderId'])
-        .setData({
-      'accept_status': true,
-    },merge: true);
-    Fluttertoast.showToast(msg: 'Order Accepted Successfully');
-//    }
   }
   _deleteFromPresOrders(){
     Fluttertoast.showToast(msg: 'Order Deliverd Successfully');

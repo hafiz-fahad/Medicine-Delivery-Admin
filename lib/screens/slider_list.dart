@@ -1,4 +1,4 @@
-import 'package:al_asr_admin/widgets/loading.dart';
+import 'package:Medsway.pk_Admin/widgets/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

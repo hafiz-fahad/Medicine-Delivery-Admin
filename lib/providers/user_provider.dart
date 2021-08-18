@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'package:al_asr_admin/providers/app_states.dart';
-import 'package:al_asr_admin/screens/add_products.dart';
-import 'package:al_asr_admin/widgets/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-enum Status{Uninitialized, AuthenticatedAdmin, Authenticating, Unauthenticated,AuthenticatedEmployee}
+enum Status{Uninitialized, Authenticated, Authenticating, Unauthenticated}
 
 class UserProvider with ChangeNotifier{
   FirebaseAuth _auth;
@@ -22,6 +19,7 @@ class UserProvider with ChangeNotifier{
   }
 
   Future<bool> signIn(String email, String password)async{
+//    if(email == 'admin@admin.com'){
       try{
         _status = Status.Authenticating;
         notifyListeners();
@@ -33,34 +31,15 @@ class UserProvider with ChangeNotifier{
         print(e.toString());
         return false;
       }
-  }
+//    }
+//    else{
+//      Text('Invalid Email');
+//    }
 
-  Future<bool> signUp(
-      String email,
-      String password,
-     )async{
-    try{
-      _status = Status.Authenticating;
-      notifyListeners();
-      await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      //     .then((user){
-      //   _firestore.collection('adminUser').document(user.uid).setData({
-      //     'email':email,
-      //     'uid':user.uid,
-      //   });
-      // });
-      return true;
-    }catch(e){
-      _status = Status.Unauthenticated;
-      notifyListeners();
-      print(e.toString());
-      return false;
-    }
   }
 
   Future signOut()async{
     _auth.signOut();
-    box.write("session","inActive");
     _status = Status.Unauthenticated;
     notifyListeners();
     return Future.delayed(Duration.zero);
@@ -71,19 +50,7 @@ class UserProvider with ChangeNotifier{
       _status = Status.Unauthenticated;
     }else{
       _user = user;
-      if(user.email == 'admin@alasr.com' || user.email.contains('@admin')){
-        box.write("session","AdminActive");
-        _status = Status.AuthenticatedAdmin;
-        print("STATUSSSSSSSS   ${_status.toString()}");
-        print("EMAILLLLLLLLL   ${user.email.toString()}");
-      }
-
-      if(user.email == 'employee@alasr.com'){
-        box.write("session","EmployeeActive");
-        _status = Status.AuthenticatedEmployee;
-        print("STATUSSSSSSSS   ${_status.toString()}");
-        print("EMAILLLLLLLLL   ${user.email.toString()}");
-      }
+      _status = Status.Authenticated;
     }
     notifyListeners();
   }

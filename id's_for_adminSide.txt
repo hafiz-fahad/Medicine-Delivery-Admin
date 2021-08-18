@@ -1,7 +1,0 @@
-access_check_key_for_create_admin = Alasrcheck123
-
-adminLoginEmail = admin@alasr.com
-adminLoginPass = Alasr123admin
-
-employeLoginEmail = employee@alasr.com
-employeLoginPass = Employee@alasr
